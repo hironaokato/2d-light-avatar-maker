@@ -39,11 +39,28 @@ npm run bundle     # dist/avatar-face.js を再生成
 | `state` | `idle` / `talking` / `thinking` / `listening` |
 | `animated` | `"false"` で静止画として描画 |
 
-状態は属性でもプロパティでも切替できます（アニメは途切れません）:
+#### 4状態をアプリから切り替える（推奨パターン）
 
-```js
-document.querySelector('avatar-face').state = 'talking';
+`state` プロパティ（または属性）が公開APIです。再描画せず滑らかに遷移します。
+エージェントのライフサイクルに紐づけてください:
+
+```html
+<script src="https://hironaokato.github.io/2d-light-avatar-maker/dist/avatar-face.js"></script>
+<avatar-face id="agent" seed="aoi" fem="0.82" age="48" state="idle"
+  style="width:160px;height:160px"></avatar-face>
+<script>
+  const agent = document.getElementById('agent');
+  // 例: LLMの状態に合わせて切り替える
+  agent.state = 'thinking';    // 応答生成を待っている
+  agent.state = 'talking';     // 返答を喋っている
+  agent.state = 'listening';   // ユーザーの入力を聞いている
+  agent.state = 'idle';        // 待機
+  // 'idle' | 'talking' | 'thinking' | 'listening'
+</script>
 ```
+
+デモの「アニメ版＋状態切替をコピー」ボタンは、この id 付き要素＋切替スクリプト＋
+確認用ボタンを丸ごとコピーします。
 
 ### B. ESM として読み込む（Vite/バンドラ環境）
 

@@ -62,10 +62,11 @@
         </div>
         <label>埋め込みコードをコピー</label>
         <div class="row">
-          <button class="ghost" id="copyAnim">アニメ版（&lt;script&gt;＋タグ）</button>
-          <button class="ghost" id="copyStatic">静止版（SVGそのまま）</button>
-          <span id="copied" class="meta" style="align-self:center"></span>
+          <button class="ghost" id="copyAnim">アニメ版（最小）</button>
+          <button class="ghost" id="copyStates">アニメ版＋状態切替</button>
+          <button class="ghost" id="copyStatic">静止版（SVG）</button>
         </div>
+        <div class="row"><span id="copied" class="meta"></span></div>
         <label>佇まい（状態）</label>
         <div class="states" id="states">
           <button data-state="idle" class="on">idle</button>

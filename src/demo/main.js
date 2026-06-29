@@ -57,11 +57,35 @@ function renderFeatured() {
   meta.textContent = `seed="${g.seed}"  fem=${g.fem.toFixed(2)}  age=${g.age}  sat=${sat.toFixed(2)}  hair=${g.hairStyle}`;
 }
 
+function tag(g, id) {
+  const idAttr = id ? `id="${id}" ` : '';
+  return `<avatar-face ${idAttr}seed="${g.seed}" fem="${g.fem.toFixed(2)}" age="${g.age}" bg-sat="${g.bgSat}" state="idle"\n  style="width:160px;height:160px"></avatar-face>`;
+}
+
+// minimal embed
 function embedSnippet(g) {
+  return `<script src="${BUNDLE_URL}"><\/script>\n${tag(g)}`;
+}
+
+// embed + how to switch the 4 states at runtime (this is the public API)
+function embedStatesSnippet(g) {
   return (
-    `<script src="${BUNDLE_URL}"><\/script>\n` +
-    `<avatar-face seed="${g.seed}" fem="${g.fem.toFixed(2)}" age="${g.age}" bg-sat="${g.bgSat}" state="idle"\n` +
-    `  style="width:160px;height:160px"></avatar-face>`
+    `<!-- 1) 一度だけ読み込む -->\n` +
+    `<script src="${BUNDLE_URL}"><\/script>\n\n` +
+    `<!-- 2) アバターを置く -->\n` +
+    `${tag(g, 'agent')}\n\n` +
+    `<!-- 3) 状態を切り替える（あなたのアプリのロジックから呼ぶ） -->\n` +
+    `<script>\n` +
+    `  const agent = document.getElementById('agent');\n` +
+    `  // agent.state = 'thinking';   // 'idle' | 'talking' | 'thinking' | 'listening'\n` +
+    `<\/script>\n\n` +
+    `<!-- 動作確認用ボタン（任意・削除可） -->\n` +
+    `<div>\n` +
+    `  <button onclick="agent.state='idle'">idle<\/button>\n` +
+    `  <button onclick="agent.state='talking'">talking<\/button>\n` +
+    `  <button onclick="agent.state='thinking'">thinking<\/button>\n` +
+    `  <button onclick="agent.state='listening'">listening<\/button>\n` +
+    `</div>`
   );
 }
 
@@ -114,7 +138,8 @@ seedInput.addEventListener('input', renderFeatured);
 gender.addEventListener('input', renderFeatured);
 age.addEventListener('input', renderFeatured);
 bgsat.addEventListener('input', renderFeatured);
-$('copyAnim').addEventListener('click', () => copyText(embedSnippet(currentGenome), 'アニメ版の埋め込みコード'));
+$('copyAnim').addEventListener('click', () => copyText(embedSnippet(currentGenome), 'アニメ版（最小）'));
+$('copyStates').addEventListener('click', () => copyText(embedStatesSnippet(currentGenome), 'アニメ版＋状態切替'));
 $('copyStatic').addEventListener('click', () => copyText(currentSvg, '静止版のSVG'));
 $('randomize').addEventListener('click', () => {
   seedInput.value = randomSeed();
