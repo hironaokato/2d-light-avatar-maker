@@ -847,7 +847,6 @@ function renderFace(g, uid = 'a') {
   s.bg = desaturate(g.colors.bg || '#e6e8ec', g.bgSat != null ? g.bgSat : 0.72);
   const hairPieces = hair(P, s, g.hairStyle || 'shortMale', uid, g.recede || 0);
   const headD = headPath(P);
-  const headClip = `head-${uid}`;
   const cir = `cir-${uid}`;
 
   // Layer hierarchy for a believable turn (parallax = pseudo-rotation):
@@ -861,8 +860,6 @@ function renderFace(g, uid = 'a') {
     hairPieces.back +
     neck(P, s) +
     `<path d="${headD}" fill="${s.skin}"/>` +
-    `<clipPath id="${headClip}"><path d="${headD}"/></clipPath>` +
-    `<g clip-path="url(#${headClip})">${skinShade(P, s)}</g>` +
     hairPieces.front +
     `<g class="av-face">` +
     blush(P, s, g.blush ? 0.42 : 0.22) +
