@@ -25,6 +25,7 @@ let currentGenome = null;
 let currentSvg = '';
 let idle = null;
 let currentState = 'idle';
+let currentShape = 'circle';
 
 function femFromSlider() {
   const v = parseFloat(gender.value);
@@ -40,7 +41,7 @@ function renderFeatured() {
   const fem = femFromSlider();
   const ageV = ageFromSlider();
   const sat = parseFloat(bgsat.value);
-  const opts = { bgSat: sat };
+  const opts = { bgSat: sat, shape: currentShape };
   if (fem != null) opts.fem = fem;
   if (ageV != null) opts.age = ageV;
   const g = generate(seed, opts);
@@ -59,7 +60,7 @@ function renderFeatured() {
 
 function tag(g, id) {
   const idAttr = id ? `id="${id}" ` : '';
-  return `<avatar-face ${idAttr}seed="${g.seed}" fem="${g.fem.toFixed(2)}" age="${g.age}" bg-sat="${g.bgSat}" state="idle"\n  style="width:160px;height:160px"></avatar-face>`;
+  return `<avatar-face ${idAttr}seed="${g.seed}" fem="${g.fem.toFixed(2)}" age="${g.age}" bg-sat="${g.bgSat}" shape="${g.shape}" state="idle"\n  style="width:160px;height:160px"></avatar-face>`;
 }
 
 // minimal embed
@@ -106,6 +107,15 @@ stateBar.addEventListener('click', (e) => {
   currentState = btn.dataset.state;
   stateBar.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b === btn));
   if (idle) idle.setState(currentState);
+});
+
+const shapeBar = $('shapes');
+shapeBar.addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  currentShape = btn.dataset.shape;
+  shapeBar.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b === btn));
+  renderFeatured();
 });
 
 const RANDOM_SEEDS = ['aoi', 'ren', 'mira', 'kai', 'yuna', 'sora', 'taro', 'emi', 'jun', 'hana', 'leo', 'noa', 'rin', 'ken', 'mei', 'yuki'];

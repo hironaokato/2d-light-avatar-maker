@@ -73,10 +73,17 @@ export function renderFace(g, uid = 'a') {
   // shoulders stay put; the whole bust breathes gently
   const bust = `<g class="av-breathe">${parts.shoulders(P, s)}${head}</g>`;
 
+  // background shape: circle | square | rounded
+  const geom = g.shape === 'square'
+    ? '<rect x="4" y="4" width="292" height="292"'
+    : g.shape === 'rounded'
+      ? '<rect x="4" y="4" width="292" height="292" rx="46" ry="46"'
+      : '<circle cx="150" cy="150" r="146"';
+
   return (
     `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" class="avatar-face">\n` +
-    `  <clipPath id="${cir}"><circle cx="150" cy="150" r="146"/></clipPath>\n` +
-    `  <circle cx="150" cy="150" r="146" fill="${s.bg}"/>\n` +
+    `  <clipPath id="${cir}">${geom}/></clipPath>\n` +
+    `  ${geom} fill="${s.bg}"/>\n` +
     `  <g clip-path="url(#${cir})"><g transform="translate(28 10) scale(0.82)">${bust}</g></g>\n` +
     `</svg>`
   );

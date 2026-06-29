@@ -72,6 +72,7 @@ export function generate(seed, opts = {}) {
     age,
     ageT,
     bgSat: opts.bgSat != null ? opts.bgSat : 0.72, // default slightly desaturated
+    shape: opts.shape || 'circle', // background shape: circle | square | rounded
     proportions,
     colors: { skin, hair, iris, lip, clothing, bg },
     hairStyle,

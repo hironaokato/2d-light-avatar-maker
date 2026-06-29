@@ -85,6 +85,98 @@ idle.setState('thinking');
 アニメ不要なら SVG をそのまま保存（プレビューの「SVGを保存」ボタン、または `renderFace()` の戻り値）。
 PNG 化はヘッドレスブラウザ等で（`tools/render.mjs` が Chrome を使う例）。
 
+## フレームワークでの利用（React / Next.js / Vue）
+
+`<avatar-face>` は標準のカスタム要素なので、どのフレームワークでも使えます。ポイントは
+**`seed/fem/age/shape` は属性で渡し、`state` だけは ref/プロパティで切り替える**こと
+（state を再レンダリングで渡すと毎回作り直されてしまうため）。
+
+### React / Next.js
+
+Next.js（App Router）では DOM を触るのでクライアントコンポーネントにします。
+
+```tsx
+'use client';
+import { useEffect, useRef } from 'react';
+
+const BUNDLE = 'https://hironaokato.github.io/2d-light-avatar-maker/dist/avatar-face.js';
+
+// JSX に avatar-face を許可（TypeScript の場合）
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'avatar-face': any;
+    }
+  }
+}
+
+export function Avatar({ seed, fem, age, shape = 'circle', state = 'idle', size = 160 }: {
+  seed: string; fem?: number; age?: number; shape?: 'circle' | 'rounded' | 'square';
+  state?: 'idle' | 'talking' | 'thinking' | 'listening'; size?: number;
+}) {
+  const ref = useRef<HTMLElement & { state?: string }>(null);
+
+  useEffect(() => { // スクリプトを一度だけ読み込む
+    if (!document.querySelector('script[data-avatar-face]')) {
+      const s = document.createElement('script');
+      s.src = BUNDLE; s.dataset.avatarFace = ''; document.head.appendChild(s);
+    }
+  }, []);
+
+  useEffect(() => { if (ref.current) ref.current.state = state; }, [state]); // 再描画せず遷移
+
+  return (
+    <avatar-face
+      ref={ref}
+      seed={seed}
+      fem={fem}
+      age={age}
+      shape={shape}
+      style={{ width: size, height: size, display: 'inline-block' }}
+    />
+  );
+}
+
+// 使用例: <Avatar seed="aoi" fem={0.82} age={30} state={agentState} />
+```
+
+> Next.js では `next/script` をレイアウトに置いて先読みしてもOKです:
+> `<Script src="https://hironaokato.github.io/2d-light-avatar-maker/dist/avatar-face.js" strategy="afterInteractive" />`
+
+### Vue 3
+
+Vite に「`avatar-face` はカスタム要素」と伝えます（`vite.config` の
+`vue({ template: { compilerOptions: { isCustomElement: t => t === 'avatar-face' } } })`）。
+
+```vue
+<script setup>
+import { ref, watch, onMounted } from 'vue';
+const props = defineProps({
+  seed: String, fem: Number, age: Number,
+  shape: { type: String, default: 'circle' },
+  state: { type: String, default: 'idle' },
+  size: { type: Number, default: 160 },
+});
+const el = ref(null);
+onMounted(() => {
+  if (!document.querySelector('script[data-avatar-face]')) {
+    const s = document.createElement('script');
+    s.src = 'https://hironaokato.github.io/2d-light-avatar-maker/dist/avatar-face.js';
+    s.dataset.avatarFace = ''; document.head.appendChild(s);
+  }
+});
+watch(() => props.state, (v) => { if (el.value) el.value.state = v; }); // 再描画せず遷移
+</script>
+
+<template>
+  <avatar-face ref="el" :seed="seed" :fem="fem" :age="age" :shape="shape"
+    :style="{ width: size + 'px', height: size + 'px', display: 'inline-block' }" />
+</template>
+```
+
+いずれも `state` をエージェントのライフサイクル（応答待ち→`thinking`、発話中→`talking`、
+入力受付→`listening`、待機→`idle`）に紐づければOKです。
+
 ## 構成
 
 ```

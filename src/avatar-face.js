@@ -16,7 +16,7 @@ const HOST_CSS = ':host{display:inline-block;width:120px;height:120px;line-heigh
 let uidc = 0;
 
 export class AvatarFace extends HTMLElement {
-  static get observedAttributes() { return ['seed', 'fem', 'age', 'bg-sat', 'state', 'animated']; }
+  static get observedAttributes() { return ['seed', 'fem', 'age', 'bg-sat', 'shape', 'state', 'animated']; }
 
   connectedCallback() {
     if (!this.shadowRoot) this.attachShadow({ mode: 'open' });
@@ -42,6 +42,8 @@ export class AvatarFace extends HTMLElement {
     if (ageAttr != null && ageAttr !== '') opts.age = parseFloat(ageAttr);
     const satAttr = this.getAttribute('bg-sat');
     if (satAttr != null && satAttr !== '') opts.bgSat = parseFloat(satAttr);
+    const shapeAttr = this.getAttribute('shape');
+    if (shapeAttr) opts.shape = shapeAttr;
     const g = generate(seed, opts);
     const svg = renderFace(g, 'ac' + uidc++);
     if (this._idle) { this._idle.destroy(); this._idle = null; }

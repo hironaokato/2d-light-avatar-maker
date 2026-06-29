@@ -791,6 +791,7 @@ function generate(seed, opts = {}) {
     age,
     ageT,
     bgSat: opts.bgSat != null ? opts.bgSat : 0.72, // default slightly desaturated
+    shape: opts.shape || 'circle', // background shape: circle | square | rounded
     proportions,
     colors: { skin, hair, iris, lip, clothing, bg },
     hairStyle,
@@ -878,10 +879,17 @@ function renderFace(g, uid = 'a') {
   // shoulders stay put; the whole bust breathes gently
   const bust = `<g class="av-breathe">${shoulders(P, s)}${head}</g>`;
 
+  // background shape: circle | square | rounded
+  const geom = g.shape === 'square'
+    ? '<rect x="4" y="4" width="292" height="292"'
+    : g.shape === 'rounded'
+      ? '<rect x="4" y="4" width="292" height="292" rx="46" ry="46"'
+      : '<circle cx="150" cy="150" r="146"';
+
   return (
     `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" class="avatar-face">\n` +
-    `  <clipPath id="${cir}"><circle cx="150" cy="150" r="146"/></clipPath>\n` +
-    `  <circle cx="150" cy="150" r="146" fill="${s.bg}"/>\n` +
+    `  <clipPath id="${cir}">${geom}/></clipPath>\n` +
+    `  ${geom} fill="${s.bg}"/>\n` +
     `  <g clip-path="url(#${cir})"><g transform="translate(28 10) scale(0.82)">${bust}</g></g>\n` +
     `</svg>`
   );
@@ -1028,7 +1036,7 @@ const AV_CSS = "/* Idle \"佇まい\" micro-motions + state modulation for <avat
 const HOST_CSS = ':host{display:inline-block;width:120px;height:120px;line-height:0}svg{width:100%;height:100%;display:block}';
 let __uidc = 0;
 class AvatarFace extends HTMLElement {
-  static get observedAttributes() { return ['seed', 'fem', 'age', 'bg-sat', 'state', 'animated']; }
+  static get observedAttributes() { return ['seed', 'fem', 'age', 'bg-sat', 'shape', 'state', 'animated']; }
   connectedCallback() { if (!this.shadowRoot) this.attachShadow({ mode: 'open' }); this._render(); }
   disconnectedCallback() { if (this._idle) this._idle.destroy(); }
   attributeChangedCallback(name, _o, val) {
@@ -1047,6 +1055,8 @@ class AvatarFace extends HTMLElement {
     if (ageAttr != null && ageAttr !== '') opts.age = parseFloat(ageAttr);
     const satAttr = this.getAttribute('bg-sat');
     if (satAttr != null && satAttr !== '') opts.bgSat = parseFloat(satAttr);
+    const shapeAttr = this.getAttribute('shape');
+    if (shapeAttr) opts.shape = shapeAttr;
     const g = generate(seed, opts);
     const svg = renderFace(g, 'ac' + __uidc++);
     if (this._idle) { this._idle.destroy(); this._idle = null; }
