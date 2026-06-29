@@ -1,0 +1,6 @@
+node_modules/
+.preview/
+*.log
+.DS_Store
+
+# dist/ is the shareable single-file build — keep it tracked.

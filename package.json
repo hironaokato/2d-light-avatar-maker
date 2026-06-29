@@ -1,0 +1,18 @@
+{
+  "name": "2d-light-avatar-maker",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Rule-based, animated 2D vector avatars (head/face) for AI agents on the web.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "node tools/serve.mjs",
+    "sheet": "node tools/render.mjs",
+    "bundle": "node tools/bundle.mjs"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}

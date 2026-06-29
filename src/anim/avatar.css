@@ -1,0 +1,80 @@
+/* Idle "佇まい" micro-motions + state modulation for <avatar-face> SVGs.
+   Continuous loops live here (CSS); stochastic events (blink, saccade) are
+   driven by anim/idle.js. Transforms on the big groups are translate-only so
+   they don't depend on transform-origin/bbox; only the small eye/mouth groups
+   use scale with a fill-box origin. */
+
+.avatar-face .av-breathe {
+  animation: av-breathe 4.6s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes av-breathe {
+  0%, 100% { transform: translateY(2.8px); }
+  50% { transform: translateY(-3.2px); }
+}
+
+.avatar-face .av-head {
+  animation: av-headdrift 8.5s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes av-headdrift {
+  0%   { transform: translate(1.6px, 0); }
+  30%  { transform: translate(-1.8px, -0.8px); }
+  60%  { transform: translate(1px, 0.8px); }
+  100% { transform: translate(1.6px, 0); }
+}
+
+/* Blink — squash the eye dots to their own vertical centre. */
+.avatar-face .av-eyes {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  transition: transform 95ms ease-in-out;
+}
+.avatar-face .av-eyes.av-blink { transform: scaleY(0.1); }
+
+/* Pseudo-rotation: outline shifts a little, the face plane shifts more, eyes most.
+   All translated inline by JS; staggered easing makes the features lead. */
+/* Head tilt — used by thinking (cocked, pensive) and listening (attentive). */
+.avatar-face .av-tilt {
+  transform-box: fill-box;
+  transform-origin: 50% 90%;
+  transition: transform 700ms ease-in-out;
+}
+.avatar-face .av-look { transition: transform 640ms ease-in-out; }
+.avatar-face .av-face {
+  transition: transform 520ms ease-in-out;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+.avatar-face .av-gaze { transition: transform 420ms ease-in-out; }
+
+/* Talking — mouth opens/closes from its top edge. */
+.avatar-face .av-mouth {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+}
+.avatar-face.av-state-talking .av-mouth {
+  animation: av-talk 0.3s ease-in-out infinite;
+}
+@keyframes av-talk {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(2); }
+}
+
+/* Thinking — slow, contemplative drift (the tilt/up-gaze are JS-driven). */
+.avatar-face.av-state-thinking .av-head { animation-duration: 12s; }
+/* Listening — clear, attentive nods ("uh-huh"). */
+.avatar-face.av-state-listening .av-head { animation: av-nod 3s ease-in-out infinite; }
+@keyframes av-nod {
+  0%, 64%, 100% { transform: translateY(0); }
+  12% { transform: translateY(5px); }
+  26% { transform: translateY(0.5px); }
+  40% { transform: translateY(4px); }
+  54% { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar-face .av-breathe,
+  .avatar-face .av-head,
+  .avatar-face.av-state-talking .av-mouth { animation: none; }
+}

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2D Light Avatar Maker — preview</title>
+  <link rel="stylesheet" href="./src/anim/avatar.css" />
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: #eceef2; color: #2a2e35;
+      font: 14px/1.5 -apple-system, "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
+    }
+    header { padding: 18px 24px; }
+    header h1 { margin: 0; font-size: 16px; }
+    header p { margin: 4px 0 0; color: #6b7280; font-size: 12px; }
+    main { display: grid; gap: 20px; padding: 0 24px 40px; max-width: 1100px; margin: 0 auto; }
+    .panel { background: #fff; border-radius: 16px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,.07); }
+    .featured { display: grid; grid-template-columns: 280px 1fr; gap: 22px; align-items: center; }
+    .featured .art { display: flex; align-items: center; justify-content: center; }
+    .featured .art svg { width: 260px; height: 260px; display: block; }
+    .controls label { display: block; font-size: 12px; color: #6b7280; margin: 12px 0 4px; }
+    .controls input[type=text] { width: 100%; padding: 8px 10px; border: 1px solid #d4d7dd; border-radius: 8px; font: inherit; }
+    .controls input[type=range] { width: 100%; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    button { font: inherit; padding: 8px 14px; border: 0; border-radius: 8px; background: #46506b; color: #fff; cursor: pointer; }
+    button.ghost { background: #e7e9ee; color: #333; }
+    .states { display: flex; gap: 6px; margin-top: 14px; }
+    .states button { background: #e7e9ee; color: #333; padding: 7px 12px; }
+    .states button.on { background: #46506b; color: #fff; }
+    .meta { margin-top: 10px; font-size: 12px; color: #6b7280; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .cell { text-align: center; }
+    .cell .art { cursor: pointer; display: flex; justify-content: center; }
+    .cell .art svg { width: 150px; height: 150px; display: block; }
+    .cell .lbl { font-size: 11px; color: #6b7280; margin-top: 4px; }
+    .gallery-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    h2 { font-size: 13px; margin: 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>2D Light Avatar Maker</h1>
+    <p>顔ルールベース生成 v1 — シードと性別軸でリアルタイム生成（やわらかいイラスト様式）</p>
+  </header>
+  <main>
+    <section class="panel featured">
+      <div class="art" id="featured"></div>
+      <div class="controls">
+        <label for="seed">シード（同じ値なら必ず同じ顔）</label>
+        <input type="text" id="seed" value="aoi" />
+        <label for="gender">性別軸 <span id="genlabel">自動</span>（0=男性 … 1=女性）</label>
+        <input type="range" id="gender" min="-0.01" max="1" step="0.01" value="-0.01" />
+        <label for="age">年齢 <span id="agelabel">自動</span>（10〜20代 … 30〜50代）</label>
+        <input type="range" id="age" min="16" max="55" step="1" value="16" />
+        <label for="bgsat">背景の彩度 <span id="satlabel"></span></label>
+        <input type="range" id="bgsat" min="0" max="1" step="0.01" value="0.72" />
+        <div class="row">
+          <button id="randomize">ランダムなシード</button>
+          <button class="ghost" id="download">SVGを保存</button>
+        </div>
+        <label>埋め込みコードをコピー</label>
+        <div class="row">
+          <button class="ghost" id="copyAnim">アニメ版（&lt;script&gt;＋タグ）</button>
+          <button class="ghost" id="copyStatic">静止版（SVGそのまま）</button>
+          <span id="copied" class="meta" style="align-self:center"></span>
+        </div>
+        <label>佇まい（状態）</label>
+        <div class="states" id="states">
+          <button data-state="idle" class="on">idle</button>
+          <button data-state="talking">talking</button>
+          <button data-state="thinking">thinking</button>
+          <button data-state="listening">listening</button>
+        </div>
+        <div class="meta" id="meta"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="gallery-head">
+        <h2>ギャラリー（ランダム）</h2>
+        <button class="ghost" id="reroll">再生成</button>
+      </div>
+      <div class="gallery" id="gallery"></div>
+    </section>
+  </main>
+  <script type="module" src="./src/demo/main.js"></script>
+</body>
+</html>
